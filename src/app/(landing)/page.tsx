@@ -1,22 +1,34 @@
-import { use } from "react"
-import { GET } from "@/utils/axios"
+import {
+    dehydrate,
+    QueryClient,
+    HydrationBoundary
+} from '@tanstack/react-query';
+import { use } from 'react';
+import { GET } from '@/utils/axios';
+import LandingPage from './landing-page';
 
-async function fetchMessage() {
-    const response = await GET<any>({
+async function getMessage() {
+    const response = await GET({
         url: '/message',
         config: {
             headers: { 'Content-Type': 'application/json' },
             withCredentials: true
         }
     });
-    console.log(response.data);
     return response.data;
 }
 
 export default function Page() {
-    const { message } = use(fetchMessage());
+    const queryClient = new QueryClient();
+
+    use(queryClient.prefetchQuery({
+        queryKey: ['message'],
+        queryFn: getMessage
+    }));
 
     return (
-        <h1 className="text-3xl font-semibold">{message}</h1>
-    )
+        <HydrationBoundary state={dehydrate(queryClient)}>
+            <LandingPage />
+        </HydrationBoundary>
+    );
 }

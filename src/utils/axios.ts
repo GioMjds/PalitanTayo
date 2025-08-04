@@ -1,14 +1,6 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { APIRequests, APIRequestsWithData } from '@/types/AxiosInstance';
+import axios, { AxiosResponse } from 'axios';
 import type { AxiosInstance } from 'axios';
-
-type APIRequests = {
-    url: string;
-    config?: AxiosRequestConfig;
-}
-
-type APIRequestsWithData<T = Record<string, unknown>> = APIRequests & {
-    data: T;
-}
 
 const api: AxiosInstance = axios.create({
     baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api`,

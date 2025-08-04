@@ -9,7 +9,10 @@ const leagueSpartan = League_Spartan({
 })
 
 export const metadata: Metadata = {
-    title: "Palitan Tayo!",
+    title: {
+        default: "Palitan Tayo!",
+        template: "%s",
+    },
     description: "A Online Community Barter System",
 };
 
