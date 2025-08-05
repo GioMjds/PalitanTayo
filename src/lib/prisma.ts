@@ -9,7 +9,7 @@ const globalForPrisma = global as GlobalForPrisma;
 
 const prisma =
 	globalForPrisma.prisma ??
-	(process.env.NODE_ENV === 'production'
+	(process.env.NODE_ENV === 'development'
 		? new PrismaClient().$extends(withAccelerate())
 		: new PrismaClient().$extends(withAccelerate()));
 
