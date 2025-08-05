@@ -7,6 +7,7 @@ import { sendOTPEmail } from "@/utils/email";
 import path from "path";
 import fs from "fs";
 import cloudinary from "@/lib/cloudinary";
+import { isValidEmail, isValidPassword } from "@/utils/regex";
 
 export async function POST(req: NextRequest) {
     try {
@@ -38,15 +39,13 @@ export async function POST(req: NextRequest) {
             case 'login': {
                 const { email, username, password } = await req.json();
 
-                const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-                
                 if ((!email && !username) || !password) {
                     return NextResponse.json({
                         error: 'Please fill in all required fields.'
                     }, { status: 400 });
                 }
 
-                if (email && !emailRegex.test(email)) {
+                if (email && !isValidEmail(email)) {
                     return NextResponse.json({
                         error: 'Invalid email format'
                     }, { status: 400 });
@@ -128,17 +127,17 @@ export async function POST(req: NextRequest) {
             case 'send_register_otp': { // For /register
                 const { email, firstName, lastName, username, password, confirmPassword } = await req.json();
 
-                const existingUser = await prisma.user.findUnique({
-                    where: { email }
-                });
-
                 if (!email || !firstName || !lastName || !username || !password || !confirmPassword) {
                     return NextResponse.json({
                         error: 'Please provide all required fields.'
                     }, { status: 400 });
                 }
 
-                if (!email) {
+                const existingUser = await prisma.user.findUnique({
+                    where: { email }
+                });
+                
+                if (!email || !isValidEmail(email)) {
                     return NextResponse.json({
                         error: 'Email is required'
                     }, { status: 400 });
@@ -147,6 +146,12 @@ export async function POST(req: NextRequest) {
                 if (!username) {
                     return NextResponse.json({
                         error: 'Username is required'
+                    }, { status: 400 });
+                }
+
+                if (!isValidPassword(password)) {
+                    return NextResponse.json({
+                        error: 'Current password does not meet the requirements yet.'
                     }, { status: 400 });
                 }
 
@@ -165,7 +170,7 @@ export async function POST(req: NextRequest) {
                 const otp = Math.floor(100000 + Math.random() * 900000).toString();
                 const hashedPassword = await hash(password, 12);
 
-                otpStorage.set(firstName, lastName, email, otp, hashedPassword);
+                otpStorage.set(firstName, lastName, email, otp, hashedPassword, username);
 
                 await sendOTPEmail({
                     email: email,
@@ -180,9 +185,9 @@ export async function POST(req: NextRequest) {
                 }, { status: 200 });
             }
             case 'verify_otp': { // For /verify-otp if /register is used
-                const { email, username, otp } = await req.json();
+                const { email, otp } = await req.json();
 
-                const validation = otpStorage.validate(email, otp, username);
+                const validation = otpStorage.validate(email, otp);
                 
                 if (!validation.valid) {
                     return NextResponse.json({
@@ -193,6 +198,7 @@ export async function POST(req: NextRequest) {
                 const hashedPassword = validation.data?.hashedPassword;
                 const firstName = validation.data?.firstName;
                 const lastName = validation.data?.lastName;
+                const username = validation.data?.username;
 
                 if (!hashedPassword) {
                     return NextResponse.json({
@@ -233,7 +239,7 @@ export async function POST(req: NextRequest) {
                         name: `${firstName} ${lastName}`,
                         email: email,
                         password: hashedPassword,
-                        username: username,
+                        username: username as string,
                         profileImage: profileImageUrl,
                     }
                 });

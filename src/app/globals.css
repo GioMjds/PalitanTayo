@@ -44,7 +44,7 @@
 /* ========== BASE STYLES ========== */
 @layer base {
     Image {
-        @apply max-w-full h-auto;
+        @apply max-w-full h-auto object-cover;
     }
 }
 
@@ -52,21 +52,21 @@
 @layer components {
 	/* ----- BUTTONS ----- */
 	.btn {
-		@apply px-6 py-3 rounded-md font-medium transition-all duration-200 ease-out;
+		@apply px-4 py-3 cursor-pointer text-xl uppercase rounded-md font-medium transition-all duration-200 ease-out;
 		border-radius: var(--radius-md);
 	}
 
 	.btn-primary {
-		@apply bg-primary text-text-inverted hover:bg-primary-light active:bg-primary-dark focus:ring-2 focus:ring-primary-light;
+		@apply bg-primary cursor-pointer text-text-inverted hover:bg-primary-light active:bg-primary-dark focus:ring-2 focus:ring-primary-light;
 		box-shadow: var(--shadow-sm);
 	}
 
 	.btn-secondary {
-		@apply bg-secondary text-primary hover:bg-secondary-light active:bg-secondary-dark focus:ring-2 focus:ring-secondary;
+		@apply bg-secondary cursor-pointer text-primary hover:bg-secondary-light active:bg-secondary-dark focus:ring-2 focus:ring-secondary;
 	}
 
 	.btn-outline {
-		@apply border-2 border-primary text-primary bg-transparent hover:bg-primary/10 active:bg-primary/20;
+		@apply border-2 border-primary cursor-pointer text-primary bg-transparent hover:bg-primary/10 active:bg-primary/20;
 	}
 
 	/* ----- CARDS ----- */

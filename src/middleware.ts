@@ -7,7 +7,7 @@ const encodedKey = new TextEncoder().encode(secretKey);
 export async function middleware(req: NextRequest) {
     const { pathname } = req.nextUrl;
     const protectedRoutes = ['/'];
-    const authRoutes = ['/login', '/register', '/forgot', '/verify-otp'];
+    const authRoutes = ['/login', '/register', '/forgot', '/verify'];
     const accessToken = req.cookies.get('access_token')?.value;
     const cookiesToDelete = ['access_token', 'refresh_token'];
 

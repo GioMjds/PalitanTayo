@@ -6,6 +6,8 @@ export const metadata: Metadata = {
     description: "Create your new account in Palitan Tayo!",
 }
 
+export const dynamic = "force-dynamic";
+
 export default function Register() {
     return <RegisterPage />
 }

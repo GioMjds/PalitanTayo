@@ -154,7 +154,7 @@ export async function sendOTPEmail({ email, otp, type = "register" }: SendOTPEma
     Need help? Contact our support team at support@palitantayo.com
     
     This email was sent to ${email}
-    © 2024 Palitan Tayo. All rights reserved.
+    © ${new Date().getFullYear()} Palitan Tayo. All rights reserved.
     `;
 
     const mailOptions = {
