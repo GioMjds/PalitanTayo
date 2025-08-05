@@ -1,13 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createSession, getCookiesToDelete } from "@/lib/auth";
-import prisma from "@/lib/prisma";
+import { isValidEmail, isValidPassword } from "@/utils/regex";
 import { compare, hash } from "bcrypt"
 import { otpStorage } from "@/utils/otp";
 import { sendOTPEmail } from "@/utils/email";
+import prisma from "@/lib/prisma";
+import cloudinary from "@/lib/cloudinary";
 import path from "path";
 import fs from "fs";
-import cloudinary from "@/lib/cloudinary";
-import { isValidEmail, isValidPassword } from "@/utils/regex";
 
 export async function POST(req: NextRequest) {
     try {
@@ -37,29 +37,23 @@ export async function POST(req: NextRequest) {
                 return response;
             }
             case 'login': {
-                const { email, username, password } = await req.json();
+                const { identifier, password } = await req.json();
 
-                if ((!email && !username) || !password) {
+                if (!identifier || !password) {
                     return NextResponse.json({
                         error: 'Please fill in all required fields.'
                     }, { status: 400 });
                 }
 
-                if (email && !isValidEmail(email)) {
-                    return NextResponse.json({
-                        error: 'Invalid email format'
-                    }, { status: 400 });
-                }
-
                 let user;
 
-                if (email) {
-                    user = await prisma.user.findUnique({ where: { email } });
-                } else if (username) {
-                    user = await prisma.user.findUnique({ where: { username } });
+                if (isValidEmail(identifier)) {
+                    user = await prisma.user.findUnique({ where: { email: identifier } });
+                } else {
+                    user = await prisma.user.findUnique({ where: { username: identifier } });
                 }
 
-                if (!email && !username) {
+                if (!identifier) {
                     return NextResponse.json({
                         error: 'Email or username is required'
                     }, { status: 400 });
@@ -180,8 +174,7 @@ export async function POST(req: NextRequest) {
 
                 return NextResponse.json({
                     message: 'OTP sent successfully',
-                    email: email,
-                    otp: otp // For testing purposes, remove in production
+                    email: email
                 }, { status: 200 });
             }
             case 'verify_otp': { // For /verify-otp if /register is used
@@ -284,7 +277,36 @@ export async function POST(req: NextRequest) {
                 return response;
             }
             case 'resend_otp': { // For /verify-otp resending the OTP
+                const { firstName, lastName, email } = await req.json();
 
+                if (!email) {
+                    return NextResponse.json({
+                        error: 'Email is required'
+                    }, { status: 400 });
+                }
+
+                const otpData = otpStorage.get(email);
+
+                if (!otpData) {
+                    return NextResponse.json({
+                        error: 'No OTP found for this email. Please register first.'
+                    }, { status: 404 });
+                }
+
+                const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+
+                otpStorage.set(firstName, lastName, email, newOtp, otpData.hashedPassword, otpData.username);
+
+                await sendOTPEmail({
+                    email: email,
+                    otp: newOtp,
+                    type: 'reset'
+                });
+
+                return NextResponse.json({
+                    message: 'OTP resent successfully',
+                    email: email,
+                }, { status: 200 });
             }
             case 'forgot_password_send_otp': { // For /forgot-password sending OTP for password reset
                 

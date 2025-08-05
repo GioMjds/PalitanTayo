@@ -97,6 +97,12 @@ export async function getCurrentUser() {
             where: { id: session.userId },
             select: {
                 id: true,
+                name: true,
+                username: true,
+                items: true,
+                swapsInitiated: true,
+                swapsReceived: true,
+                ratings: true,
                 email: true,
                 location: true,
                 profileImage: true

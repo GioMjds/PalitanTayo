@@ -30,6 +30,12 @@ interface PasswordValidation {
     hasSpecialChar: boolean;
 }
 
+interface RegisterResponse {
+    email?: string;
+    message?: string;
+    error?: string;
+}
+
 const blobVariants = {
     initial: {
         opacity: 0,
@@ -160,10 +166,9 @@ export default function RegisterPage() {
                     withCredentials: true,
                 }
             });
-            return response;
+            return response as RegisterResponse;
         },
-        onSuccess: (response) => {
-            console.table(`Registration successful: ${response}`);
+        onSuccess: (response: RegisterResponse) => {
             if (response?.email) {
                 if (typeof window !== "undefined") {
                     localStorage.setItem("registerData", response.email);

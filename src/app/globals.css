@@ -52,7 +52,7 @@
 @layer components {
 	/* ----- BUTTONS ----- */
 	.btn {
-		@apply px-4 py-3 cursor-pointer text-xl uppercase rounded-md font-medium transition-all duration-200 ease-out;
+		@apply p-3 cursor-pointer text-lg rounded-md font-medium transition-all duration-200 ease-out;
 		border-radius: var(--radius-md);
 	}
 

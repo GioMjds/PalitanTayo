@@ -12,8 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDoorOpen, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 interface LoginForm {
-    email: string;
-    username?: string;
+    identifier: string; // Can be email or username
     password: string;
 }
 
@@ -63,6 +62,7 @@ const itemVariants = {
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState<boolean>(false);
+
     const router = useRouter();
 
     const {
@@ -72,11 +72,6 @@ export default function Login() {
         setError,
     } = useForm<LoginForm>({
         mode: "onBlur",
-        defaultValues: {
-            email: "",
-            username: "",
-            password: ""
-        }
     });
 
     const mutation = useMutation({
@@ -84,8 +79,7 @@ export default function Login() {
             const response = await POST({
                 url: "/auth?action=login",
                 data: {
-                    email: data.email,
-                    username: data.username,
+                    identifier: data.identifier,
                     password: data.password,
                 },
                 config: {
@@ -190,19 +184,19 @@ export default function Login() {
 
                             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                                 <motion.div variants={itemVariants}>
-                                    <label htmlFor="email" className="block text-lg font-medium text-text-secondary mb-1">
+                                    <label htmlFor="identifier" className="block text-lg font-medium text-text-secondary mb-1">
                                         Email or Username
                                     </label>
                                     <input
                                         id="text"
                                         className="input-field"
                                         placeholder="Enter your email or username"
-                                        {...register("email", {
+                                        {...register("identifier", {
                                             required: "Email or username is required",
                                         })}
                                     />
-                                    {errors.email && (
-                                        <p className="mt-1 text-sm text-error">{errors.email.message}</p>
+                                    {errors.identifier && (
+                                        <p className="mt-1 text-sm text-error">{errors.identifier.message}</p>
                                     )}
                                 </motion.div>
 

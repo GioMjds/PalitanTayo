@@ -6,5 +6,5 @@ export type APIRequests = {
 }
 
 export type APIRequestsWithData<T = Record<string, unknown>> = APIRequests & {
-    data: T;
+    data?: T;
 }
