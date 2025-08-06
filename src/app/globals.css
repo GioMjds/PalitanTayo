@@ -96,7 +96,7 @@
 
 	/* ----- BLOBS/SHAPES ----- */
 	.blob {
-		@apply absolute rounded-full blur-xl opacity-20 -z-10;
+		@apply absolute rounded-full blur-xl opacity-60 z-10;
 		background: var(--color-secondary);
 		filter: blur(60px);
 	}

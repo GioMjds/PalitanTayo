@@ -116,7 +116,7 @@ export async function sendOTPEmail({ email, otp, type = "register" }: SendOTPEma
                                     This email was sent to <strong>${email}</strong>
                                 </p>
                                 <p style="margin: 0 0 16px 0; color: #8bc2c4; font-size: 12px;">
-                                    © 2024 Palitan Tayo. All rights reserved.
+                                    © ${new Date().getFullYear()} Palitan Tayo. All rights reserved.
                                 </p>
                                 <div style="margin-top: 16px;">
                                     <a href="#" style="color: #5c6b80; text-decoration: none; font-size: 12px; margin: 0 8px;">Privacy Policy</a>

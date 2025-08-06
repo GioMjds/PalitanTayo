@@ -242,7 +242,7 @@ export default function Login() {
                                             Remember me
                                         </label>
                                     </div>
-                                    <Link href="/forgot-password" className="text-lg text-link">
+                                    <Link href="/forgot" className="text-lg text-link">
                                         Forgot password?
                                     </Link>
                                 </motion.div>

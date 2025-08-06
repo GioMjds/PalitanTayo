@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import ForgotPasswordPage from "./forgot-password";
 
 export const metadata: Metadata = {
     title: "Forgot Password",
@@ -8,7 +9,5 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default function ForgotPassword() {
-    return (
-        <h1>Forgot Password</h1>
-    )
+    return <ForgotPasswordPage />
 }

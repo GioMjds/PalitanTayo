@@ -1,7 +1,9 @@
 "use client";
 
+import PasswordTooltip from "@/components/PasswordTooltip";
+import { PasswordValidation } from "@/types/CustomerAuth";
 import { POST } from "@/utils/axios";
-import { isValidPassword } from "@/utils/regex";
+import { isValidPassword, validatePassword } from "@/utils/regex";
 import { faCheckCircle, faEye, faEyeSlash, faTimesCircle, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMutation } from "@tanstack/react-query";
@@ -19,15 +21,6 @@ interface RegisterForm {
     username: string;
     password: string;
     confirmPassword: string;
-}
-
-interface PasswordValidation {
-    isValid: boolean;
-    hasLength: boolean;
-    hasUppercase: boolean;
-    hasLowercase: boolean;
-    hasNumber: boolean;
-    hasSpecialChar: boolean;
 }
 
 interface RegisterResponse {
@@ -80,35 +73,6 @@ const itemVariants = {
     }
 };
 
-const PasswordTooltip = ({ validation }: { validation: PasswordValidation }) => (
-    <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 10 }}
-        className="absolute z-10 mt-2 w-64 p-3 bg-surface-primary rounded-lg shadow-lg border border-accent-dark"
-    >
-        <div className="tooltip-arrow"></div>
-        <h4 className="text-sm font-medium text-primary mb-2">Password Requirements:</h4>
-        <ul className="space-y-1 text-sm text-text-secondary">
-            <li className={`flex items-center ${validation.hasLength ? 'text-success' : 'text-error'}`}>
-                {validation.hasLength ? '✓' : '✗'} At least 10 characters
-            </li>
-            <li className={`flex items-center ${validation.hasUppercase ? 'text-success' : 'text-error'}`}>
-                {validation.hasUppercase ? '✓' : '✗'} 1 uppercase letter
-            </li>
-            <li className={`flex items-center ${validation.hasLowercase ? 'text-success' : 'text-error'}`}>
-                {validation.hasLowercase ? '✓' : '✗'} 1 lowercase letter
-            </li>
-            <li className={`flex items-center ${validation.hasNumber ? 'text-success' : 'text-error'}`}>
-                {validation.hasNumber ? '✓' : '✗'} 1 number
-            </li>
-            <li className={`flex items-center ${validation.hasSpecialChar ? 'text-success' : 'text-error'}`}>
-                {validation.hasSpecialChar ? '✓' : '✗'} 1 special character
-            </li>
-        </ul>
-    </motion.div>
-);
-
 export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
@@ -135,19 +99,6 @@ export default function RegisterPage() {
 
     const passwordValue = watch("password");
     const confirmPasswordValue = watch("confirmPassword");
-
-    const validatePassword = (password: string): PasswordValidation => {
-        const isPasswordValid = isValidPassword(password);
-        const specialChar = /[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?`~]/;
-        return {
-            isValid: isPasswordValid,
-            hasLength: password.length >= 10,
-            hasUppercase: /[A-Z]/.test(password),
-            hasLowercase: /[a-z]/.test(password),
-            hasNumber: /\d/.test(password),
-            hasSpecialChar: specialChar.test(password),
-        };
-    };
 
     const sendOtpMutation = useMutation({
         mutationFn: async (data: RegisterForm) => {

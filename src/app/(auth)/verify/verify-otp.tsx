@@ -71,7 +71,7 @@ export default function VerifyOTPPage() {
         },
         onSuccess: () => {
             setError(null);
-            setCooldownTime(60); // 1 minute cooldown
+            setCooldownTime(60);
             setIsCooldown(true);
         },
         onError: (error: any) => {
@@ -139,9 +139,7 @@ export default function VerifyOTPPage() {
         }
     };
 
-    if (!email) {
-        return null; // Or loading spinner
-    }
+    if (!email) return null;
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-background p-4 overflow-hidden relative">
@@ -183,7 +181,7 @@ export default function VerifyOTPPage() {
                         {otp.map((value, i) => (
                             <input
                                 key={i}
-                                ref={el => (inputRefs.current[i] = el)}
+                                ref={el => { inputRefs.current[i] = el; }}
                                 type="text"
                                 inputMode="numeric"
                                 pattern="[0-9]*"

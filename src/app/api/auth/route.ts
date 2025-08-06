@@ -330,18 +330,104 @@ export async function POST(req: NextRequest) {
                 }, { status: 200 });
             }
             case 'forgot_password_send_otp': { // For /forgot-password sending OTP for password reset
-                
+                const { email } = await req.json();
+
+                if (!email) {
+                    return NextResponse.json({
+                        error: 'Email is required'
+                    }, { status: 500 });
+                }
+
+                const user = await prisma.user.findUnique({
+                    where: { email }
+                });
+
+                if (!user) {
+                    return NextResponse.json({
+                        error: 'User not found with this email'
+                    }, { status: 404 });
+                }
+
+                const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+                otpStorage.set("", "", email, otp, user.password!, user.username);
+
+                await sendOTPEmail({
+                    email: email,
+                    otp: otp,
+                    type: 'reset'
+                });
+
+                return NextResponse.json({
+                    message: 'OTP sent successfully',
+                }, { status: 200 });
             }
             case 'forgot_password_verify_otp': { // For /forgot-password verifying the OTP for password reset
+                const { email, otp } = await req.json();
 
+                if (!email || !otp) {
+                    return NextResponse.json({
+                        error: 'Email and OTP are required'
+                    }, { status: 400 });
+                }
+
+                const validation = otpStorage.validate(email, otp);
+
+                if (!validation.valid) {
+                    return NextResponse.json({
+                        error: validation.error
+                    }, { status: 400 });
+                }
+
+                return NextResponse.json({
+                    message: 'OTP verified successfully',
+                }, { status: 200 });
             }
             case 'forgot_password_reset': { // For /forgot-password resetting the password after Forgot Password OTP verification
+                const { email, otp, newPassword } = await req.json();
 
+                if (!email || !otp || !newPassword) {
+                    return NextResponse.json({
+                        error: 'Email, OTP, and new password are required'
+                    }, { status: 400 });
+                }
+
+                const validation = otpStorage.validate(email, otp);
+
+                if (!validation.valid) {
+                    return NextResponse.json({
+                        error: validation.error
+                    }, { status: 400 });
+                }
+
+                const currentPassword = await prisma.user.findUnique({
+                    where: { email },
+                    select: { password: true }
+                });
+
+                if (currentPassword?.password && await compare(newPassword, currentPassword.password)) {
+                    return NextResponse.json({
+                        error: 'New password must be different from the current password'
+                    }, { status: 400 });
+                }
+
+                const hashedPassword = await hash(newPassword, 12);
+
+                await prisma.user.update({
+                    where: { email },
+                    data: { password: hashedPassword }
+                });
+
+                otpStorage.delete(email);
+
+                return NextResponse.json({
+                    message: 'Password reset successfully',
+                }, { status: 200 });
             }
             default: {
                 return NextResponse.json({
                     error: `Invalid action: ${action}`
-                }, { status: 500 });
+                }, { status: 400 });
             }
         }
     } catch (error) {
