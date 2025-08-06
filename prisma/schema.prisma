@@ -15,8 +15,12 @@ datasource db {
 }
 
 enum SwapStatus {
-  PENDING
+  PROPOSED
+  COUNTERED
+  WITHDRAWN
+  REJECTED
   ACCEPTED
+  IN_PROGRESS
   COMPLETED
 }
 
@@ -26,6 +30,7 @@ model User {
   username       String   @unique
   password       String
   name           String
+  bio            String? // Short bio or description
   location       String? // e.g. "Manila, Tondo" or "Cebu, Talamban"
   profileImage   String? // URL to the user's profile image (Cloudinary)
   created_at     DateTime @default(now())
@@ -45,7 +50,7 @@ model Item {
   title           String
   description     String?
   photos          String[] // Array of image URLs
-  condition       String? // e.g. "New", "Used-Good", "Used-Fair"
+  item_condition  String?   
   quantity        Int      @default(1)
   location_radius Int?     @default(10) // In kilometers
   created_at      DateTime @default(now())
@@ -61,7 +66,7 @@ model Item {
 
 model Swap {
   id              String     @id @default(uuid())
-  status          SwapStatus @default(PENDING)
+  status          SwapStatus @default(PROPOSED)
   created_at      DateTime   @default(now())
   updated_at      DateTime   @updatedAt
 

@@ -47,6 +47,7 @@ export async function POST(req: NextRequest) {
 
                 let user;
 
+                // Either email or username can be used for login
                 if (isValidEmail(identifier)) {
                     user = await prisma.user.findUnique({ where: { email: identifier } });
                 } else {
@@ -130,6 +131,14 @@ export async function POST(req: NextRequest) {
                 const existingUser = await prisma.user.findUnique({
                     where: { email }
                 });
+
+                const existingUsername = await prisma.user.findUnique({
+                    where: { username }
+                });
+
+                const existingName = await prisma.user.findFirst({
+                    where: { name: `${firstName} ${lastName}` }
+                });
                 
                 if (!email || !isValidEmail(email)) {
                     return NextResponse.json({
@@ -141,6 +150,18 @@ export async function POST(req: NextRequest) {
                     return NextResponse.json({
                         error: 'Username is required'
                     }, { status: 400 });
+                }
+
+                if (existingUsername) {
+                    return NextResponse.json({
+                        error: 'Username already exists'
+                    }, { status: 409 });
+                }
+
+                if (existingName) {
+                    return NextResponse.json({
+                        error: 'Name already exists'
+                    }, { status: 409 });
                 }
 
                 if (!isValidPassword(password)) {

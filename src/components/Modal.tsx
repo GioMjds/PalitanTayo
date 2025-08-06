@@ -41,10 +41,6 @@ const Modal: FC<ModalProps> = ({
         onConfirm?.();
     }, [onConfirm]);
 
-    const backdropClick = (e: MouseEvent) => {
-        if (e.target === e.currentTarget) cancel();
-    };
-
     useEffect(() => {
         const keyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") cancel();
@@ -69,8 +65,7 @@ const Modal: FC<ModalProps> = ({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    onClick={backdropClick}
-                    className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+                    className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4"
                 >
                     <motion.div
                         initial={{ scale: 0.95, y: 20 }}
@@ -92,9 +87,9 @@ const Modal: FC<ModalProps> = ({
                                     </div>
                                 )}
                                 <div className="flex-1">
-                                    <h3 className="text-xl font-bold text-primary">{title}</h3>
+                                    <h3 className="text-3xl font-bold text-primary">{title}</h3>
                                     {description && (
-                                        <p className="mt-2 text-text-secondary">{description}</p>
+                                        <p className="text-lg mt-2 text-text-secondary">{description}</p>
                                     )}
                                 </div>
                             </div>
@@ -116,14 +111,14 @@ const Modal: FC<ModalProps> = ({
                             <div className="bg-surface-secondary px-6 py-4 flex justify-end gap-3">
                                 <button
                                     onClick={cancel}
-                                    className="btn btn-outline px-4 py-2 text-sm"
+                                    className="btn btn-outline px-4 py-2 text-md"
                                     disabled={loading}
                                 >
                                     {cancelText}
                                 </button>
                                 <button
                                     onClick={confirm}
-                                    className="btn btn-primary px-4 py-2 text-sm"
+                                    className="btn btn-primary px-4 py-2 text-md"
                                     disabled={loading}
                                 >
                                     {confirmText}

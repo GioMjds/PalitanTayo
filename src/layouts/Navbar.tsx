@@ -13,7 +13,7 @@ import Dropdown from "@/components/Dropdown";
 import ProfileIcon from "@/components/ProfileIcon";
 import Modal from "@/components/Modal";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignOutAlt, faUser, faExchangeAlt } from '@fortawesome/free-solid-svg-icons';
+import { faSignOutAlt, faUser, faExchangeAlt, faSignOut } from '@fortawesome/free-solid-svg-icons';
 
 interface NavbarProps {
     userDetails?: {
@@ -75,14 +75,20 @@ export default function Navbar({ userDetails }: NavbarProps) {
         <>
             <nav className="fixed top-0 left-0 w-full bg-primary text-text-inverted shadow-lg z-50">
                 <div className="flex items-center justify-between w-full py-4 px-4 sm:px-6">
-                    <Link href="/" className="text-2xl font-bold hover:text-secondary-light transition-colors">
-                        <Image
-                            src={logo}
-                            alt="Palitan Tayo Logo"
-                            width={50}
-                            height={50}
-                            className="object-cover"
-                        />
+                    <Link prefetch href="/" className="flex items-center space-x-2">
+                        <div className="relative w-10 h-10 sm:w-12 sm:h-12">
+                            <Image
+                                src={logo}
+                                alt="Palitan Tayo Logo"
+                                fill
+                                sizes="auto"
+                                priority
+                                className="object-cover"
+                            />
+                        </div>
+                        <span className="text-2xl sm:text-3xl font-bold text-secondary drop-shadow-md">
+                            Palitan Tayo
+                        </span>
                     </Link>
 
                     <section className="flex-1 max-w-2xl mx-4">
@@ -192,17 +198,21 @@ export default function Navbar({ userDetails }: NavbarProps) {
             </nav>
 
             {/* Logout Modal */}
-            <Modal
-                isOpen={showLogoutModal}
-                onCancel={() => setShowLogoutModal(false)}
-                title="Confirm Logout"
-                description="Are you sure you want to logout?"
-                confirmText="Log Out"
-                cancelText="Cancel"
-                onConfirm={mutate}
-                loading={isPending}
-                loadingText="Logging out..."
-            />
+            {showLogoutModal && (
+                <AnimatePresence mode="wait">
+                    <Modal
+                        isOpen={showLogoutModal}
+                        onCancel={() => setShowLogoutModal(false)}
+                        title="Confirm Logout"
+                        description="Are you sure you want to logout?"
+                        confirmText="Log Out"
+                        cancelText="Cancel"
+                        onConfirm={mutate}
+                        loading={isPending}
+                        loadingText="Logging out..."
+                    />
+                </AnimatePresence>
+            )}
         </>
     );
 }
