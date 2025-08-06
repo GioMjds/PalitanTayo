@@ -31,15 +31,13 @@ export default function Page() {
                             </div>
                         </div>
                         <div className="lg:w-1/2">
-                            <div className="card p-2">
-                                <Image
-                                    src={palitanTayoImg}
-                                    alt="People trading items"
-                                    width={600}
-                                    height={400}
-                                    className="rounded-lg"
-                                />
-                            </div>
+                            <Image
+                                src={palitanTayoImg}
+                                alt="People trading items"
+                                width={600}
+                                height={400}
+                                className="object-cover"
+                            />
                         </div>
                     </div>
                 </div>

@@ -1,7 +1,7 @@
-import axios, { AxiosResponse } from 'axios';
 import type { AxiosInstance } from 'axios';
 import { APIRequests, APIRequestsWithData } from '@/types/AxiosInstance';
 import { getCookie } from './cookies';
+import axios from 'axios';
 
 const api: AxiosInstance = axios.create({
     baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api`,
@@ -45,8 +45,8 @@ api.interceptors.response.use(
  * console.log(listData);
  * ```
  */
-export const GET = async <T>({ url, config }: APIRequests): Promise<AxiosResponse<T>> => {
-    return await api.get<T>(url, config);
+export const GET = async <T>({ url, config }: APIRequests): Promise<T> => {
+    return await api.get<T>(url, config) as T;
 }
 
 /**
@@ -64,8 +64,8 @@ export const GET = async <T>({ url, config }: APIRequests): Promise<AxiosRespons
  * console.log(response.data);
  * ```
  */
-export const POST = async <T>({ url, data, config }: APIRequestsWithData): Promise<AxiosResponse<T>> => {
-    return await api.post<T>(url, data, config);
+export const POST = async <T>({ url, data, config }: APIRequestsWithData): Promise<T> => {
+    return await api.post<T>(url, data, config) as T;
 }
 
 /**
@@ -92,8 +92,8 @@ export const POST = async <T>({ url, data, config }: APIRequestsWithData): Promi
  * console.log(updateResponse.data);
  * ```
  */
-export const PUT = async <T>({ url, data, config }: APIRequestsWithData): Promise<AxiosResponse<T>> => {
-    return await api.put<T>(url, data, config);
+export const PUT = async <T>({ url, data, config }: APIRequestsWithData): Promise<T> => {
+    return await api.put<T>(url, data, config) as T;
 }
 
 /**
@@ -119,8 +119,8 @@ export const PUT = async <T>({ url, data, config }: APIRequestsWithData): Promis
  * console.log(deleteResponse.data);
  * ```
  */
-export const DELETE = async <T>({ url, config }: APIRequests): Promise<AxiosResponse<T>> => {
-    return await api.delete<T>(url, config);
+export const DELETE = async <T>({ url, config }: APIRequests): Promise<T> => {
+    return await api.delete<T>(url, config) as T;
 }
 
 /**
@@ -147,6 +147,6 @@ export const DELETE = async <T>({ url, config }: APIRequests): Promise<AxiosResp
  * console.log(patchResponse.data);
  * ```
  */
-export const PATCH = async <T>({ url, data, config }: APIRequestsWithData): Promise<AxiosResponse<T>> => {
-    return await api.patch<T>(url, data, config);
+export const PATCH = async <T>({ url, data, config }: APIRequestsWithData): Promise<T> => {
+    return await api.patch<T>(url, data, config) as T;
 }
