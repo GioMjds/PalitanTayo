@@ -24,7 +24,7 @@ export default function NotFound() {
                             404
                         </motion.h1>
                         <h2 className="text-2xl md:text-3xl font-bold text-primary mb-6">
-                            User Not Found
+                            Item Not Found
                         </h2>
                         <p className="text-text-secondary mb-8 text-lg">
                             The item or profile you're looking for has been swapped or is no longer available.

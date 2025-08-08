@@ -8,6 +8,7 @@ import prisma from "@/lib/prisma";
 import cloudinary from "@/lib/cloudinary";
 import path from "path";
 import fs from "fs";
+import { getCookie } from "@/utils/cookies";
 
 export async function POST(req: NextRequest) {
     try {
@@ -38,7 +39,7 @@ export async function POST(req: NextRequest) {
             }
             case 'login': {
                 const { identifier, password } = await req.json();
-
+                
                 if (!identifier || !password) {
                     return NextResponse.json({
                         error: 'Please fill in all required fields.'
@@ -46,7 +47,7 @@ export async function POST(req: NextRequest) {
                 }
 
                 let user;
-
+                
                 // Either email or username can be used for login
                 if (isValidEmail(identifier)) {
                     user = await prisma.user.findUnique({ where: { email: identifier } });
@@ -73,7 +74,7 @@ export async function POST(req: NextRequest) {
                 }
 
                 const isPasswordValid = await compare(password, user.password);
-
+                
                 if (!isPasswordValid) {
                     return NextResponse.json({
                         error: 'Invalid password'
@@ -96,7 +97,7 @@ export async function POST(req: NextRequest) {
                         username: user.username
                     }
                 }, { status: 200 });
-
+                
                 response.cookies.set({
                     name: 'access_token',
                     value: session.accessToken,
@@ -106,7 +107,7 @@ export async function POST(req: NextRequest) {
                     maxAge: 60 * 60 * 24, // 1 day
                     path: "/",
                 });
-
+                
                 response.cookies.set({
                     name: 'refresh_token',
                     value: session.refreshToken,
@@ -116,6 +117,8 @@ export async function POST(req: NextRequest) {
                     maxAge: 60 * 60 * 24 * 30, // 30 days
                     path: "/",
                 });
+
+                response.headers.set('Authorization', `Bearer ${session.accessToken}`);
 
                 return response;
             }

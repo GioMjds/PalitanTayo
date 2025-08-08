@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import {
     dehydrate,
     HydrationBoundary,
@@ -10,7 +11,7 @@ import { UserProfileResponse } from "@/types/response/UserProfile";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({ params }: { params: Promise<{ userId: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ userId: string }> }): Promise<Metadata> {
     try {
         const { userId } = await params;
         const userData = await GET<UserProfileResponse>({

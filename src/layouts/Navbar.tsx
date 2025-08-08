@@ -96,16 +96,6 @@ export default function Navbar({ userDetails }: NavbarProps) {
                     </section>
 
                     <div className="hidden md:flex items-center space-x-6">
-                        <Link href="/about" className="text-link inverted">
-                            About
-                        </Link>
-                        <Link href="/how-it-works" className="text-link inverted">
-                            How It Works
-                        </Link>
-                        <Link href="/community" className="text-link inverted">
-                            Community
-                        </Link>
-
                         {userDetails ? (
                             <div ref={profileRef}>
                                 <Dropdown
@@ -129,7 +119,7 @@ export default function Navbar({ userDetails }: NavbarProps) {
                                         {
                                             label: 'Log Out',
                                             onClick: () => setShowLogoutModal(true),
-                                            icon: <FontAwesomeIcon icon={faSignOutAlt} className="w-4 h-4" />
+                                            icon: <FontAwesomeIcon icon={faSignOutAlt} className="w-4 h-4 text-red-500" />
                                         },
                                     ]}
                                     position="bottom"

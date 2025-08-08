@@ -5,6 +5,6 @@ export type APIRequests = {
     config?: AxiosRequestConfig<any>;
 }
 
-export type APIRequestsWithData<T = Record<string, unknown>> = APIRequests & {
+export type APIRequestsWithData<T = Record<string, unknown> | FormData> = APIRequests & {
     data?: T;
 }

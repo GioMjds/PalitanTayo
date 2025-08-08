@@ -47,7 +47,7 @@ model User {
 
 model Item {
   id              String   @id @default(uuid())
-  title           String
+  item_name       String
   description     String?
   photos          String[] // Array of image URLs
   item_condition  String?   
@@ -61,7 +61,7 @@ model Item {
   swapAsA         Swap[] @relation("SwapItemA")
   swapAsB         Swap[] @relation("SwapItemB")
 
-  @@index([title])
+  @@index([item_name])
 }
 
 model Swap {

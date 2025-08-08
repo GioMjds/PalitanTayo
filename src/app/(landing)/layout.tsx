@@ -38,9 +38,7 @@ export default async function RootLayout({
 
     return (
         <html lang="en">
-            <body
-                className={`${leagueSpartan.variable} ${leagueSpartan.className} antialiased min-h-screen flex flex-col`}
-            >
+            <body className={`${leagueSpartan.variable} ${leagueSpartan.className} antialiased min-h-screen flex flex-col`}>
                 <Providers>
                     <Navbar userDetails={user} />
                     <main className="flex-1">

@@ -3,7 +3,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 export default function Loading() {
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 mt-20">
             {/* Profile Header Skeleton */}
             <div className="flex flex-col md:flex-row gap-8 mb-12">
                 <div className="w-full md:w-1/3 lg:w-1/4">

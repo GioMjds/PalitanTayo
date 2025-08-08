@@ -1,48 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
-import palitanTayoImg from "@/../public/palitantayo-logo.png";
 
 export default function Page() {
     return (
-        <div className="relative overflow-hidden">
-            {/* Background blobs */}
-            <div className="blob blob-1"></div>
-            <div className="blob blob-2"></div>
-
-            {/* Hero Section */}
-            <section className="relative section-padding">
-                <div className="container mx-auto px-2">
-                    <div className="flex flex-col lg:flex-row items-center gap-12">
-                        <div className="lg:w-1/2">
-                            <h1 className="text-4xl md:text-5xl font-bold text-primary mb-6">
-                                Trade What You Have, <span className="text-secondary">Get What You Need</span>
-                            </h1>
-                            <p className="text-text-secondary text-lg mb-8">
-                                Join our community barter system where you can exchange goods and services without cash.
-                                It's simple, sustainable, and connects you with your neighbors.
-                            </p>
-                            <div className="flex flex-col sm:flex-row gap-4">
-                                <Link href="/signup" className="btn btn-primary">
-                                    Get Started
-                                </Link>
-                                <Link href="/how-it-works" className="btn btn-outline">
-                                    Learn More
-                                </Link>
-                            </div>
-                        </div>
-                        <div className="lg:w-1/2">
-                            <Image
-                                src={palitanTayoImg}
-                                alt="People trading items"
-                                width={600}
-                                height={400}
-                                className="object-cover"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </section>
-
+        <main className="min-h-screen relative overflow-hidden">
             {/* How It Works Section */}
             <section className="bg-surface-secondary section-padding">
                 <div className="container mx-auto px-4">
@@ -83,11 +43,11 @@ export default function Page() {
                     <p className="text-secondary-light max-w-2xl mx-auto mb-8">
                         Join our growing community of traders today and discover a new way to get what you need.
                     </p>
-                    <Link href="/signup" className="btn btn-secondary">
+                    <Link href="/signup" rel="noopener noreferrer" target="_blank" className="btn btn-secondary">
                         Sign Up Now
                     </Link>
                 </div>
             </section>
-        </div>
+        </main>
     );
 }

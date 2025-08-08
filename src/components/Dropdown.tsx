@@ -84,25 +84,16 @@ const Dropdown: FC<DropdownProps> = ({ options, userDetails, position = "bottom"
                         {userDetails && (
                             <div className="flex items-center gap-3 px-4 py-3 border-b border-accent-dark bg-surface-secondary">
                                 <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-secondary">
-                                    {userDetails.profileImage ? (
-                                        <Image
-                                            src={userDetails.profileImage}
-                                            alt={userDetails.name}
-                                            fill
-                                            className="object-cover"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full bg-secondary flex items-center justify-center">
-                                            <span className="text-primary font-bold">
-                                                {userDetails.name?.charAt(0).toUpperCase() ||
-                                                    userDetails.email?.charAt(0).toUpperCase()}
-                                            </span>
-                                        </div>
-                                    )}
+                                    <Image
+                                        src={userDetails.profileImage ?? ""}
+                                        alt={userDetails.name}
+                                        fill
+                                        className="object-cover"
+                                    />
                                 </div>
                                 <div className="flex flex-col overflow-hidden">
                                     <span className="font-semibold text-primary truncate">
-                                        {userDetails.name || userDetails.username}
+                                        {userDetails.name}
                                     </span>
                                     <span className="text-sm text-text-secondary truncate">
                                         {userDetails.email}

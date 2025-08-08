@@ -6,6 +6,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { POST } from "@/utils/axios";
 import { useRouter } from "next/navigation";
+import { getCookie } from "@/utils/cookies";
 import Link from "next/link";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -64,6 +65,7 @@ export default function Login() {
     const [showPassword, setShowPassword] = useState<boolean>(false);
 
     const router = useRouter();
+    const token = getCookie("access_token");
 
     const {
         register,
@@ -83,11 +85,11 @@ export default function Login() {
                     password: data.password,
                 },
                 config: {
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     withCredentials: true,
                 }
             });
-            return response.data;
+            return response;
         },
         onSuccess: () => {
             router.push("/");

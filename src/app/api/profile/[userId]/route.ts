@@ -13,7 +13,7 @@ export async function GET(
                 items: {
                     select: {
                         id: true,
-                        title: true,
+                        item_name: true,
                         description: true,
                         photos: true,
                         item_condition: true,
@@ -59,6 +59,7 @@ export async function GET(
             swapsInitiated: user.swapsInitiated,
             swapsReceived: user.swapsReceived,
             createdAt: user.created_at,
+            updatedAt: user.updated_at,
         }, { status: 200 });
     } catch (error) {
         return NextResponse.json({
