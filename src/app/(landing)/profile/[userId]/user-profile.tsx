@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { useQuery, useMutation, QueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, QueryClient, useQueryClient } from "@tanstack/react-query";
 import { GET, DELETE, PUT } from "@/utils/axios";
 import { UserProfileResponse } from "@/types/response/UserProfile";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,7 +19,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
     const [selectedItemId, setSelectedItemId] = useState<string>("");
     const [selectedItem, setSelectedItem] = useState<any>(null);
 
-    const queryClient = new QueryClient();
+    const queryClient = useQueryClient();
 
     const { data } = useQuery({
         queryKey: ["userDetails", userId],
@@ -156,7 +156,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
                                     </motion.button>
                                     <motion.button
                                         onClick={() => handleDeleteClick(item.id)}
-                                        className="btn btn-error p-2 text-xs"
+                                        className="btn btn-outline bg-red-600 p-2 text-xs"
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
                                     >
@@ -176,7 +176,7 @@ export default function ProfilePage({ userId }: { userId: string }) {
                                 <h3 className="font-bold text-lg text-primary mb-1">{item.item_name}</h3>
                                 <p className="text-text-secondary mb-2">{item.description}</p>
                                 <span className="text-xs text-text-secondary mb-1">Condition: {item.item_condition}</span>
-                                <span className="text-xs text-text-secondary mb-1">Quantity: {item.quantity}</span>
+                                <span className="text-xs text-text-secondary mb-1">Swap Demand: {item.swap_demand}</span>
                             </div>
                         ))
                     )}
@@ -280,13 +280,13 @@ export default function ProfilePage({ userId }: { userId: string }) {
                     setShowEditModal(false);
                     setSelectedItem(null);
                 }}
-                item={selectedItem}
-                userId={userId}
                 onSuccess={() => {
-                    queryClient.invalidateQueries({ queryKey: ['userDetails', userId] });
                     setShowEditModal(false);
                     setSelectedItem(null);
                 }}
+                item={selectedItem}
+                queryClient={queryClient}
+                userId={userId}
             />
         </div>
     );

@@ -18,15 +18,9 @@ export async function POST(req: NextRequest) {
         const item_name = formData.get("item_name") as string;
         const description = formData.get("description") as string | null;
         const item_condition = formData.get("item_condition") as string | null;
-        const quantity = parseInt(formData.get("quantity") as string);
+        const swap_demand = formData.get("swap_demand") as string | null;
         const photos = formData.getAll("photos") as File[];
         const uploadedImageUrls: string[] = [];
-        
-        if (!item_name || isNaN(quantity)) {
-            return NextResponse.json({
-                error: "Missing required fields"
-            }, { status: 400 });
-        }
 
         if (photos && photos.length > 0) {
             for (const photo of photos) {
@@ -60,22 +54,38 @@ export async function POST(req: NextRequest) {
                 item_name: item_name,
                 description: description,
                 item_condition: item_condition,
-                quantity: quantity,
-                photos: uploadedImageUrls,
+                swap_demand: swap_demand,
                 userId: user.id,
+            },
+            include: {
+                images: true,
             }
         });
+
+        const imagePromises = uploadedImageUrls.map(url => 
+            prisma.itemImage.create({
+                data: {
+                    id: crypto.randomUUID(),
+                    url: url,
+                    itemId: newItem.id,
+                }
+            })
+        );
+
+        const itemImages = await Promise.all(imagePromises);
 
         return NextResponse.json({
             message: "Item added successfully",
             item: {
                 id: newItem.id,
+                userId: newItem.userId,
                 item_name: newItem.item_name,
                 description: newItem.description,
                 item_condition: newItem.item_condition,
-                quantity: newItem.quantity,
-                photos: newItem.photos,
-                userId: newItem.userId,
+                swap_demand: newItem.swap_demand,
+                photos: itemImages.map(image => image.url),
+                created_at: newItem.created_at,
+                updated_at: newItem.updated_at,
             }
         }, { status: 201 });
     } catch (error) {

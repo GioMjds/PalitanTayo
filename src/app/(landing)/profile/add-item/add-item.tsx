@@ -14,7 +14,7 @@ type FormValues = {
     item_name: string;
     description: string;
     item_condition: string;
-    quantity: number;
+    swap_demand: string;
     photos: FileList;
 };
 
@@ -33,10 +33,8 @@ export default function AddItemPage() {
     const router = useRouter();
 
     const { register, handleSubmit, reset, formState: { errors } } = useForm<FormValues>({
-        defaultValues: {
-            quantity: 1,
-        }
-    })
+        mode: "onBlur"
+    });
 
     const mutation = useMutation<ItemResponse, unknown, FormData>({
         mutationFn: async (formData: FormData) => {
@@ -82,10 +80,10 @@ export default function AddItemPage() {
         formData.append('item_name', data.item_name);
         formData.append('description', data.description || '');
         formData.append('item_condition', data.item_condition || '');
-        formData.append('quantity', data.quantity.toString());
+        formData.append('swap_demand', data.swap_demand || '');
 
         // Append each photo
-        if (data.photos) {
+        if (data.photos && data.photos.length > 0) {
             Array.from(data.photos).forEach((file) => {
                 formData.append(`photos`, file);
             });
@@ -136,44 +134,35 @@ export default function AddItemPage() {
                         <label htmlFor="item_condition" className="block text-sm font-medium text-text-secondary mb-1">
                             Condition
                         </label>
-                        <select
+                        <input
+                            type="text"
                             id="item_condition"
-                            {...register('item_condition')}
+                            {...register('item_condition', { required: 'Item condition is required' })}
                             className="input-field w-full"
-                        >
-                            <option value="">Select condition</option>
-                            <option value="Brand New">Brand New</option>
-                            <option value="Like New">Like New</option>
-                            <option value="Good">Good</option>
-                            <option value="Fair">Fair</option>
-                            <option value="Poor">Poor</option>
-                        </select>
+                        />
+                        {errors.item_condition && (
+                            <p className="mt-1 text-sm text-error">{errors.item_condition.message}</p>
+                        )}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label htmlFor="quantity" className="block text-sm font-medium text-text-secondary mb-1">
-                                Quantity *
-                            </label>
-                            <input
-                                id="quantity"
-                                type="number"
-                                min="1"
-                                {...register('quantity', {
-                                    required: 'Quantity is required',
-                                    min: { value: 1, message: 'Quantity must be at least 1' }
-                                })}
-                                className="input-field w-full"
-                            />
-                            {errors.quantity && (
-                                <p className="mt-1 text-sm text-error">{errors.quantity.message}</p>
-                            )}
-                        </div>
+                    <div>
+                        <label htmlFor="item_condition" className="block text-sm font-medium text-text-secondary mb-1">
+                            Swap Demand
+                        </label>
+                        <input
+                            type="text"
+                            id="swap_demand"
+                            {...register('swap_demand', { required: 'Swap demand is required' })}
+                            className="input-field w-full"
+                        />
+                        {errors.swap_demand && (
+                            <p className="mt-1 text-sm text-error">{errors.swap_demand.message}</p>
+                        )}
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-text-secondary mb-1">
-                            Photos (Max 5)
+                            Photos
                         </label>
                         <div className="flex flex-col gap-4">
                             <div className="relative border-2 border-dashed border-border-default rounded-lg p-6 text-center">
@@ -194,11 +183,8 @@ export default function AddItemPage() {
                                             ? 'Add more photos (up to 5)'
                                             : 'Click to upload photos'}
                                     </p>
-                                    <p className="text-xs text-text-secondary">
-                                        {previewImages.length}/5 photos selected
-                                    </p>
                                 </div>
-                            </div>
+                            </div>  
 
                             {previewImages.length > 0 && (
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
@@ -225,10 +211,11 @@ export default function AddItemPage() {
                         </div>
                     </div>
 
-                    <div className="flex justify-end gap-4 pt-4">
+                    <div className="flex justify-center gap-4 pt-4">
                         <motion.button
                             type="submit"
-                            className="btn btn-primary flex items-center gap-2"
+                            className={`btn btn-primary w-full sm:w-auto flex items-center justify-center gap-2 
+                                ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                             disabled={isLoading}
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}

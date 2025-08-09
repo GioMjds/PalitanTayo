@@ -6,13 +6,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX, faCircleNotch, faEdit } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
+import { QueryClient, useMutation } from "@tanstack/react-query";
 import Image from "next/image";
 
 interface EditItemModalProps {
     isOpen: boolean;
     onClose: () => void;
     item: any;
+    queryClient: QueryClient;
     userId: string;
     onSuccess: () => void;
 }
@@ -21,22 +22,21 @@ type FormValues = {
     item_name: string;
     description: string;
     item_condition: string;
-    quantity: number;
+    swap_demand: string;
     photos: FileList;
 };
 
-const EditItemModal: FC<EditItemModalProps> = ({ isOpen, onClose, item, userId, onSuccess }) => {
+const EditItemModal: FC<EditItemModalProps> = ({ isOpen, onClose, item , queryClient, userId, onSuccess }) => {
     const [previewImages, setPreviewImages] = useState<string[]>([]);
 
     const { register, handleSubmit, reset, formState: { errors }, setValue } = useForm<FormValues>();
 
-    // Set form values when item changes
     useEffect(() => {
         if (item) {
             setValue('item_name', item.item_name);
             setValue('description', item.description || '');
             setValue('item_condition', item.item_condition || '');
-            setValue('quantity', item.quantity);
+            setValue('swap_demand', item.swap_demand);
             setPreviewImages(item.photos || []);
         }
     }, [item, setValue]);
@@ -54,6 +54,7 @@ const EditItemModal: FC<EditItemModalProps> = ({ isOpen, onClose, item, userId, 
             return response;
         },
         onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['userDetails', userId] });
             onSuccess();
             reset();
             setPreviewImages([]);
@@ -81,9 +82,8 @@ const EditItemModal: FC<EditItemModalProps> = ({ isOpen, onClose, item, userId, 
         formData.append('item_name', data.item_name);
         formData.append('description', data.description || '');
         formData.append('item_condition', data.item_condition || '');
-        formData.append('quantity', data.quantity.toString());
+        formData.append('swap_demand', data.swap_demand);
 
-        // Only append photos if new ones are selected
         if (data.photos && data.photos.length > 0) {
             Array.from(data.photos).forEach((file) => {
                 formData.append('photos', file);
@@ -166,44 +166,36 @@ const EditItemModal: FC<EditItemModalProps> = ({ isOpen, onClose, item, userId, 
                                 <label htmlFor="item_condition" className="block text-sm font-medium text-text-secondary mb-1">
                                     Condition
                                 </label>
-                                <select
+                                <input
                                     id="item_condition"
                                     {...register('item_condition')}
                                     className="input-field w-full"
                                     disabled={editItemMutation.isPending}
-                                >
-                                    <option value="">Select condition</option>
-                                    <option value="Brand New">Brand New</option>
-                                    <option value="Like New">Like New</option>
-                                    <option value="Good">Good</option>
-                                    <option value="Fair">Fair</option>
-                                    <option value="Poor">Poor</option>
-                                </select>
+                                />
                             </div>
 
                             <div>
-                                <label htmlFor="quantity" className="block text-sm font-medium text-text-secondary mb-1">
-                                    Quantity *
+                                <label htmlFor="swap_demand" className="block text-sm font-medium text-text-secondary mb-1">
+                                    Swap Demand
                                 </label>
                                 <input
-                                    id="quantity"
-                                    type="number"
+                                    id="swap_demand"
+                                    type="text"
                                     min="1"
-                                    {...register('quantity', {
-                                        required: 'Quantity is required',
-                                        min: { value: 1, message: 'Quantity must be at least 1' }
+                                    {...register('swap_demand', {
+                                        required: 'Swap demand is required',
                                     })}
                                     className="input-field w-full"
                                     disabled={editItemMutation.isPending}
                                 />
-                                {errors.quantity && (
-                                    <p className="mt-1 text-sm text-error">{errors.quantity.message}</p>
+                                {errors.swap_demand && (
+                                    <p className="mt-1 text-sm text-error">{errors.swap_demand.message}</p>
                                 )}
                             </div>
 
                             <div>
                                 <label className="block text-sm font-medium text-text-secondary mb-1">
-                                    Photos (Max 5)
+                                    Photos
                                 </label>
                                 <input
                                     type="file"

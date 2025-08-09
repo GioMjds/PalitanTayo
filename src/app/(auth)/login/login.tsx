@@ -6,7 +6,6 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { POST } from "@/utils/axios";
 import { useRouter } from "next/navigation";
-import { getCookie } from "@/utils/cookies";
 import Link from "next/link";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -65,7 +64,6 @@ export default function Login() {
     const [showPassword, setShowPassword] = useState<boolean>(false);
 
     const router = useRouter();
-    const token = getCookie("access_token");
 
     const {
         register,
@@ -85,7 +83,7 @@ export default function Login() {
                     password: data.password,
                 },
                 config: {
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    headers: { 'Content-Type': 'application/json' },
                     withCredentials: true,
                 }
             });
@@ -97,7 +95,7 @@ export default function Login() {
         onError: (error: any) => {
             setError("root", {
                 type: "manual",
-                message: error.response?.data?.error,
+                message: error.response?.data?.message
             });
         },
     });
@@ -190,7 +188,7 @@ export default function Login() {
                                         Email or Username
                                     </label>
                                     <input
-                                        id="text"
+                                        id="identifier"
                                         className="input-field"
                                         placeholder="Enter your email or username"
                                         {...register("identifier", {
@@ -228,10 +226,10 @@ export default function Login() {
                                     >
                                         <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} size="xl" />
                                     </motion.button>
-                                    {errors.password && (
-                                        <p className="mt-1 text-sm text-error">{errors.password.message}</p>
-                                    )}
                                 </motion.div>
+                                {errors.password && (
+                                    <p className="mt-1 text-sm text-error">{errors.password.message}</p>
+                                )}
 
                                 <motion.div variants={itemVariants} className="flex items-center justify-between">
                                     <div className="flex items-center">

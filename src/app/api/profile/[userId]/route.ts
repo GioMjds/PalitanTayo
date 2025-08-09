@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 
 export async function GET(
@@ -11,16 +11,9 @@ export async function GET(
             where: { id: userId },
             include: {
                 items: {
-                    select: {
-                        id: true,
-                        item_name: true,
-                        description: true,
-                        photos: true,
-                        item_condition: true,
-                        quantity: true,
-                        location_radius: true,
-                        created_at: true
-                    }
+                    include: {
+                        images: true,
+                    },
                 },
                 swapsInitiated: {
                     select: {
@@ -47,6 +40,18 @@ export async function GET(
             }, { status: 404 });
         }
 
+        const transformedItems = user.items?.map(item => ({
+            id: item.id,
+            item_name: item.item_name,
+            description: item.description,
+            item_condition: item.item_condition,
+            swap_demand: item.swap_demand,
+            photos: item.images?.map(image => image.url) || [],
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+            userId: item.userId,
+        })) || [];
+
         return NextResponse.json({
             id: user.id,
             name: user.name,
@@ -55,7 +60,7 @@ export async function GET(
             email: user.email,
             location: user.location,
             profileImage: user.profileImage,
-            items: user.items,
+            items: transformedItems,
             swapsInitiated: user.swapsInitiated,
             swapsReceived: user.swapsReceived,
             createdAt: user.created_at,

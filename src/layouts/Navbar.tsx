@@ -91,9 +91,7 @@ export default function Navbar({ userDetails }: NavbarProps) {
                         </span>
                     </Link>
 
-                    <section className="flex-1 max-w-2xl mx-4">
-                        <SearchBar />
-                    </section>
+                    <SearchBar />
 
                     <div className="hidden md:flex items-center space-x-6">
                         {userDetails ? (

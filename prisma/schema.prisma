@@ -49,19 +49,28 @@ model Item {
   id              String   @id @default(uuid())
   item_name       String
   description     String?
-  photos          String[] // Array of image URLs
-  item_condition  String?   
-  quantity        Int      @default(1)
-  location_radius Int?     @default(10) // In kilometers
+  item_condition  String?
+  swap_demand     String?
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 
   userId          String
   user            User   @relation(fields: [userId], references: [id])
+  images          ItemImage[]
   swapAsA         Swap[] @relation("SwapItemA")
   swapAsB         Swap[] @relation("SwapItemB")
 
   @@index([item_name])
+}
+
+model ItemImage {
+  id              String   @id @default(uuid())
+  url             String
+  itemId          String
+  item            Item   @relation(fields: [itemId], references: [id])
+  created_at      DateTime @default(now())
+
+  @@index([itemId])
 }
 
 model Swap {

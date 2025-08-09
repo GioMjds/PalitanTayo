@@ -12,6 +12,7 @@ export async function GET(
 
         const item = await prisma.item.findUnique({
             where: { id: itemId },
+            include: { images: true }
         });
 
         if (!item) {
@@ -24,10 +25,8 @@ export async function GET(
             id: item.id,
             item_name: item.item_name,
             description: item.description,
-            photos: item.photos,
+            photos: item.images.map(image => image.url),
             item_condition: item.item_condition,
-            quantity: item.quantity,
-            location_radius: item.location_radius,
             created_at: item.created_at,
             userId: item.userId,
         }, { status: 200 });
@@ -56,10 +55,10 @@ export async function PUT(
         const item_name = formData.get('item_name') as string;
         const description = formData.get('description') as string;
         const item_condition = formData.get('item_condition') as string;
-        const quantity = parseInt(formData.get('quantity') as string);
+        const swap_demand = formData.get('swap_demand') as string;
         const photos = formData.getAll('photos') as File[];
 
-        if (!item_name || isNaN(quantity)) {
+        if (!item_name) {
             return NextResponse.json({
                 error: "Missing required fields"
             }, { status: 400 });
@@ -67,6 +66,9 @@ export async function PUT(
 
         const existingItem = await prisma.item.findUnique({
             where: { id: itemId },
+            include: {
+                images: true
+            }
         });
 
         if (!existingItem) {
@@ -82,10 +84,29 @@ export async function PUT(
         }
 
         const newImageUrls: string[] = [];
-        const imagesToDelete: string[] = [];
 
-        for (const photo of photos) {
-            if (photo.size > 0) {
+        if (photos && photos.length > 0 && photos[0].size > 0) {
+            for (const image of existingItem.images) {
+                try {
+                    const urlParts = image.url.split('/');
+                    const fileName = urlParts[urlParts.length - 1];
+                    const publicId = `palitan-tayo/items/${fileName.split('.')[0]}`;
+                    
+                    await cloudinary.uploader.destroy(publicId);
+                } catch (cloudinaryError) {
+                    console.error(`Error deleting image from Cloudinary: ${cloudinaryError}`);
+                }
+            }
+
+            await prisma.itemImage.deleteMany({
+                where: {
+                    itemId: itemId
+                }
+            });
+
+            for (const photo of photos) {
+                if (photo.size === 0) continue;
+
                 const arrayBuffer = await photo.arrayBuffer();
                 const buffer = Buffer.from(arrayBuffer);
                 
@@ -98,19 +119,20 @@ export async function PUT(
                         }
                     ).end(buffer);
                 });
-
                 newImageUrls.push((uploadResult as any).secure_url);
             }
-        }
 
-        if (newImageUrls.length > 0) {
-            for (const image of existingItem.photos) {
-                const publicId = image.split('/').pop()?.split('.')[0];
-                if (publicId) {
-                    await cloudinary.uploader.destroy(`palitan-tayo/items/${publicId}`);
-                    imagesToDelete.push(image);
-                }
-            }
+            await Promise.all(
+                newImageUrls.map(url => 
+                    prisma.itemImage.create({
+                        data: {
+                            id: crypto.randomUUID(),
+                            url: url,
+                            itemId: itemId
+                        }
+                    })
+                )
+            );
         }
 
         const updatedItem = await prisma.item.update({
@@ -119,10 +141,10 @@ export async function PUT(
                 item_name: item_name,
                 description: description,
                 item_condition: item_condition,
-                quantity: quantity,
-                photos: newImageUrls,
+                swap_demand: swap_demand,
             },
             include: {
+                images: true,
                 user: {
                     select: {
                         id: true,
@@ -141,8 +163,8 @@ export async function PUT(
                 item_name: updatedItem.item_name,
                 description: updatedItem.description,
                 item_condition: updatedItem.item_condition,
-                quantity: updatedItem.quantity,
-                photos: updatedItem.photos,
+                swap_demand: updatedItem.swap_demand,
+                photos: updatedItem.images.map(img => img.url),
                 userId: updatedItem.userId,
             }
         }, { status: 200 });
@@ -169,6 +191,7 @@ export async function DELETE(
 
         const itemToDelete = await prisma.item.findUnique({
             where: { id: itemId },
+            include: { images: true }
         });
 
         if (!itemToDelete) {
@@ -183,10 +206,10 @@ export async function DELETE(
             }, { status: 403 });
         }
 
-        if (itemToDelete.photos && itemToDelete.photos.length > 0) {
-            for (const imageUrl of itemToDelete.photos) {
+        if (itemToDelete.images && itemToDelete.images.length > 0) {
+            for (const image of itemToDelete.images) {
                 try {
-                    const urlParts = imageUrl.split('/');
+                    const urlParts = image.url.split('/');
                     const fileName = urlParts[urlParts.length - 1];
                     const publicId = `palitan-tayo/items/${fileName.split('.')[0]}`;
                     

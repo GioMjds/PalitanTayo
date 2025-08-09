@@ -1,5 +1,5 @@
 
-export interface User {
+export type User = {
     id: string;
     name: string;
     username: string;
@@ -14,7 +14,7 @@ export interface User {
     updated_at: string;
 }
 
-export interface Item {
+export type Item = {
     id: string;
     item_name: string;
     description: string;
@@ -23,10 +23,10 @@ export interface Item {
     photos: string[];
     location_radius?: number;
     created_at: string;
-    userId: string;
+    userId: User[];
 }
 
-export interface Swap {
+export type Swap = {
     id: string;
     status: string;
     created_at: string;
